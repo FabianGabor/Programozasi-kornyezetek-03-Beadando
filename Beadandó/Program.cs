@@ -30,7 +30,38 @@ namespace Beadandó
         XII = 12
     }
 
-    internal class Program
+    class Pont
+    {
+        private double x;
+        private double y;
+
+        public Pont(double x = default, double y = default)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double X
+        {
+            get => x;
+            set => x = value;
+        }
+
+        public double Y
+        {
+            get => y;
+            set => y = value;
+        }
+
+        // Készíts void függvényt, ami a sík egy derékszögű koordinátarendszerben adott pontját tükrözi a függőleges tengely mentén!
+        public static void KoordinataTukrozFuggolegesTengely(in Pont p, out Pont pont)
+        {
+            pont = p;
+            pont.x *= -1;
+        }
+    }
+
+    internal static class Program
     {
         /*
          * Amikor túl lusta vagyok 12 értékpárt beírni enum-ba, ezért inkább eltöltök 10x annyi időt,
@@ -59,8 +90,6 @@ namespace Beadandó
             }
             return romaiSzam;
         }
-
-        
         
         public static void Main(string[] args)
         {
@@ -79,7 +108,12 @@ namespace Beadandó
             */
             Console.WriteLine("Mai datum: " + date.Year + "." + ArabRomaiKoverzio(date.Month) + "." + date.Day + ".");
             Console.WriteLine("Mai datum: " + date.Year + "." + Enum.Parse(typeof(RomaiSzamok), date.Month.ToString()) + "." + date.Day + ".");
-            
+
+            Pont p = new Pont(1,1);
+            Console.WriteLine("(" + p.X + "," + p.Y + ")");
+            Pont.KoordinataTukrozFuggolegesTengely(in p, out p);
+            Console.WriteLine("(" + p.X + "," + p.Y + ")");
+
         }
     }
 }
