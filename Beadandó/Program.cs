@@ -75,6 +75,52 @@ namespace Beadandó
             return value;
         }
     }
+    
+    /*
+        4. Tároljuk nullázható változóban egy hallgató vizsgaeredményét egy tárgyból: 1, 2, 3, 4, 5, null(nincs kitöltve az érték, vagy törölve)!
+        Készíts programot, ami képes ezt változtatni, és kiírni az aktuális állapotot!
+        A változtatás és a kiírás menüpontokból választható legyen!
+        */
+    [Serializable]
+    public class HibasVizsgaeredmeny : Exception
+    {
+        public HibasVizsgaeredmeny()
+        {
+        }
+
+        public HibasVizsgaeredmeny(string message)
+            : base(message)
+        {
+        }
+    }
+
+    internal class Hallgato
+    {
+        private int? vizsgaeredmeny = null;
+
+        public int? Vizsgaeredmeny
+        {
+            get => vizsgaeredmeny;
+            set {
+                if ((value > 0 && value < 6) || value == null)
+                    vizsgaeredmeny = value;
+                else
+                {
+                    try
+                    {
+                        throw new HibasVizsgaeredmeny("Hibás vizsgaeredmény!");
+                    } catch (Exception ex) {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return vizsgaeredmeny != null ? Vizsgaeredmeny.Value.ToString() : "null";
+        }
+    }
 
     internal static class Program
     {
@@ -131,7 +177,11 @@ namespace Beadandó
             Console.WriteLine("(" + p.X + "," + p.Y + ")");
             */
             var pi = new Pi();
-            Console.WriteLine(pi.Calculate(100000000));
+            Console.WriteLine(pi.Calculate(1000000));
+
+            Hallgato hallgato = new Hallgato();
+            hallgato.Vizsgaeredmeny = null;
+            Console.WriteLine("Vizsgaeredmény: " + hallgato);
         }
     }
 }
