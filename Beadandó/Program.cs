@@ -63,8 +63,13 @@ namespace Beadandó
             double value = 0;
             for (var i = 0; i < n; i++)
             {
-                // Value += Math.Pow(-1, i) * (4.0 / (2 * i + 1)); // 2.52% get 162ms + 1.77% set 114 ms
-                value += Math.Pow(-1, i) * (4.0 / (2 * i + 1));
+                // Value += Math.Pow(-1, i) * (4.0 / (2 * i + 1)); // 2860 ms + 2.52% get 162ms + 1.77% set 114 ms
+                // value += Math.Pow(-1, i) * (4.0 / (2 * i + 1)); // 2860 ms
+                
+                if (i % 2 == 0)
+                    value += 4.0 / (2 * i + 1);
+                else
+                    value -= 4.0 / (2 * i + 1); // 362 ms
             }
 
             return value;
