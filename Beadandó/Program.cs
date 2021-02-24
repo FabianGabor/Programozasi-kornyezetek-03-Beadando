@@ -1,6 +1,7 @@
 ﻿/*
  * Fábián Gábor
  * CXNU8T
+ * https://github.com/FabianGabor/Programozasi-kornyezetek-03-Beadando
  */
 
 /*
