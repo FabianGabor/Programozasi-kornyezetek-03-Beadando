@@ -1,4 +1,9 @@
 ﻿/*
+ * Fábián Gábor
+ * CXNU8T
+ */
+
+/*
 1. Készíts programot, ami kiírja a mindenkori aktuális dátumot úgy, hogy a hónap római számmmal
 íródik! (pl. 2015. II. 27)
 2. Készíts void függvényt, ami a sík egy derékszögű koordinátarendszerben adott pontját tükrözi a függőleges tengely mentén!
@@ -11,6 +16,7 @@ A változtatás és a kiírás menüpontokból választható legyen!
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Beadandó
 {
@@ -60,27 +66,27 @@ namespace Beadandó
 
         public double Calculate(in int n)
         {
-            double value = 0;
+            Value = 0;
             for (var i = 0; i < n; i++)
             {
                 // Value += Math.Pow(-1, i) * (4.0 / (2 * i + 1)); // 2860 ms + 2.52% get 162ms + 1.77% set 114 ms
                 // value += Math.Pow(-1, i) * (4.0 / (2 * i + 1)); // 2860 ms
                 
                 if (i % 2 == 0)
-                    value += 4.0 / (2 * i + 1);
+                    Value += 4.0 / (2 * i + 1);
                 else
-                    value -= 4.0 / (2 * i + 1); // 362 ms
+                    Value -= 4.0 / (2 * i + 1); // 362 ms
             }
 
-            return value;
+            return Value;
         }
     }
     
     /*
-        4. Tároljuk nullázható változóban egy hallgató vizsgaeredményét egy tárgyból: 1, 2, 3, 4, 5, null(nincs kitöltve az érték, vagy törölve)!
-        Készíts programot, ami képes ezt változtatni, és kiírni az aktuális állapotot!
-        A változtatás és a kiírás menüpontokból választható legyen!
-        */
+    4. Tároljuk nullázható változóban egy hallgató vizsgaeredményét egy tárgyból: 1, 2, 3, 4, 5, null(nincs kitöltve az érték, vagy törölve)!
+    Készíts programot, ami képes ezt változtatni, és kiírni az aktuális állapotot!
+    A változtatás és a kiírás menüpontokból választható legyen!
+    */
     [Serializable]
     public class HibasVizsgaeredmeny : Exception
     {
@@ -96,14 +102,14 @@ namespace Beadandó
 
     internal class Hallgato
     {
-        private int? vizsgaeredmeny = null;
+        private int? _vizsgaeredmeny;
 
         public int? Vizsgaeredmeny
         {
-            get => vizsgaeredmeny;
+            get => _vizsgaeredmeny;
             set {
-                if ((value > 0 && value < 6) || value == null)
-                    vizsgaeredmeny = value;
+                if (value > 0 && value < 6 || value == null)
+                    _vizsgaeredmeny = value;
                 else
                 {
                     try
@@ -116,9 +122,84 @@ namespace Beadandó
             }
         }
 
+        public void Valtoztat()
+        {
+            var loop = false;
+            do
+            {
+                if (loop) Console.WriteLine("Hibás jegy!");
+                Console.Write("Új jegy (1-5, null): ");
+                var success = int.TryParse(Console.ReadLine(), out var v);
+                Vizsgaeredmeny = success ? v : (int?) null;
+                loop = Vizsgaeredmeny < 1 || Vizsgaeredmeny > 5;
+            } while (loop);
+
+        }
+
+        public void Kiir()
+        {
+            Console.Write("Hallgató vizsgaeredménye: ");
+            if (_vizsgaeredmeny != null)
+            {
+                Console.WriteLine(_vizsgaeredmeny);
+            }
+            else
+            {
+                Console.WriteLine("null");
+            }
+        }
+
         public override string ToString()
         {
-            return vizsgaeredmeny != null ? Vizsgaeredmeny.Value.ToString() : "null";
+            return _vizsgaeredmeny != null ? _vizsgaeredmeny.Value.ToString() : "null";
+        }
+    }
+
+    internal class Menu
+    {
+        private enum Opciok
+        {
+            Változtat = 1,
+            Kiír = 2,
+            Kilép = 3
+        }
+
+        private int Valasz { get; set; }
+
+        public override string ToString()
+        {
+            return ((Opciok[]) Enum.GetValues(typeof(Opciok))).Aggregate("", (current, opcio) => current + opcio.GetHashCode() + ". " + opcio + "\n");
+        }
+
+        public void Show(Hallgato hallgato)
+        {
+            do
+            {
+                Console.WriteLine(ToString());
+                Console.Write("Válasz: ");
+                
+                var valasz = Valasz;
+                var success = int.TryParse(Console.ReadLine(), out valasz);
+                Valasz = success ? valasz : 0;
+                
+                switch (Valasz)
+                {
+                    case 1:
+                        hallgato.Valtoztat();
+                        //Console.WriteLine(Valasz + ". " + (Opciok) Valasz);
+                        break;
+                    case 2:
+                        hallgato.Kiir();
+                        //Console.WriteLine(Valasz + ". " + (Opciok) Valasz);
+                        break;
+                    case 3:
+                        //Console.WriteLine(Valasz + ". " + (Opciok) Valasz);
+                        return;
+                    default:
+                        Console.WriteLine("Hibás opció!");
+                        break;
+                }
+            } while (true);  // (Valasz != 3); // ott return van
         }
     }
 
@@ -151,9 +232,9 @@ namespace Beadandó
             return romaiSzam;
         }
 
-        public static void Main(string[] args)
+        public static void Main()
         {
-            //var date = DateTime.Today;
+            var date = DateTime.Today;
             /*
             for (int i = 1; i <= 12; i++)
             {
@@ -166,22 +247,24 @@ namespace Beadandó
                 Console.WriteLine(i + " " + ArabRomaiKoverzio(i));
             }
             */
-            /*
+            
             Console.WriteLine("Mai datum: " + date.Year + "." + ArabRomaiKoverzio(date.Month) + "." + date.Day + ".");
             Console.WriteLine("Mai datum: " + date.Year + "." + Enum.Parse(typeof(RomaiSzamok), date.Month.ToString()) +
-                              "." + date.Day + ".");
+                              "." + date.Day + "." + "\n");
 
             var p = new Pont(1, 1);
             Console.WriteLine("(" + p.X + "," + p.Y + ")");
             Pont.KoordinataTukrozFuggolegesTengely(in p, out p);
             Console.WriteLine("(" + p.X + "," + p.Y + ")");
-            */
+            
             var pi = new Pi();
-            Console.WriteLine(pi.Calculate(1000000));
+            Console.WriteLine(pi.Calculate(1000000) + "\n");
 
-            Hallgato hallgato = new Hallgato();
-            hallgato.Vizsgaeredmeny = null;
-            Console.WriteLine("Vizsgaeredmény: " + hallgato);
+
+            var hallgato = new Hallgato {Vizsgaeredmeny = null};
+            var menu = new Menu();
+            menu.Show(hallgato);
+
         }
     }
 }
